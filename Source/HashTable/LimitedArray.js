@@ -9,42 +9,8 @@ class LimitedArray {
       _arr[i] = undefined;
     }
 
-    Object.seal(_arr);
-
-    return new Proxy(_arr, {
-      'get': (target, index, proxy) => {
-        index = this.qualifyIndex(index);
-
-        switch (index) {
-          case 'valueOf':
-          case 'toString':
-          case 'join':
-          case 'indexOf':
-            return function () { // must be a generic function, or will not get the correct arguments object
-              return target[index](...arguments);
-            };
-
-          case 'length':
-          case 'size':
-          case 'limit':
-            return limit;
-
-          default: // either it's an integer, or an invalid key
-            if (typeof index !== 'number') {
-              return undefined;
-            }
-
-            return target[index];
-        } // end of switch
-      }, // end of get function
-
-      'set': (target, index, value, proxy) => {
-        index = this.qualifyIndex(index);
-
-        return target[index] = value;
-      }
-    }); // end of Proxy
-  } // end of constructor
+    return Object.seal(_arr);
+  }
 
   validateLimit(limit) {
     if (typeof limit !== 'number') {
@@ -57,24 +23,84 @@ class LimitedArray {
       throw new Error(`An array of size 0 is pointless!`);
     }
   }
-
-  // This is to account for the fact that the index gets turned into a string when passed through the handler methods
-  qualifyIndex(index) {
-    // Peculiarity: Node will do several initial run throughs with symbols, but Chrome DevTools does not
-    if (typeof index === 'symbol') {
-      return index;
-    }
-
-    const i = parseInt(index);
-
-    if (i !== i) { // i is NaN
-      return index;
-    }
-
-    return i;
-  }
-
 }
+
+// class LimitedArray {
+//   constructor(limit = 8) {
+//     this.validateLimit(limit);
+
+//     const _arr = [];
+
+//     for (let i = 0; i < limit; i++) {
+//       _arr[i] = undefined;
+//     }
+
+//     Object.seal(_arr);
+
+//     return new Proxy(_arr, {
+//       'get': (target, index, proxy) => {
+//         index = this.qualifyIndex(index);
+
+//         switch (index) {
+//           case 'valueOf':
+//           case 'toString':
+//           case 'join':
+//           case 'indexOf':
+//             return function () { // must be a generic function, or will not get the correct arguments object
+//               return target[index](...arguments);
+//             };
+
+//           case 'length':
+//           case 'size':
+//           case 'limit':
+//             return limit;
+
+//           default: // either it's an integer, or an invalid key
+//             if (typeof index !== 'number') {
+//               return undefined;
+//             }
+
+//             return target[index];
+//         } // end of switch
+//       }, // end of get function
+
+//       'set': (target, index, value, proxy) => {
+//         index = this.qualifyIndex(index);
+
+//         return target[index] = value;
+//       }
+//     }); // end of Proxy
+//   } // end of constructor
+
+//   validateLimit(limit) {
+//     if (typeof limit !== 'number') {
+//       throw new Error(`The limit must be a number!`);
+//     } else if (~~limit !== limit) { // Note: if the limit is an integer dot zero (ex. 1.0), then it will be accepted as an integer
+//       throw new Error(`The limit must be an integer!`);
+//     } else if (limit < 0) {
+//       throw new Error(`There can't be a negative limit!`);
+//     } else if (limit < 1) {
+//       throw new Error(`An array of size 0 is pointless!`);
+//     }
+//   }
+
+//   // This is to account for the fact that the index gets turned into a string when passed through the handler methods
+//   qualifyIndex(index) {
+//     // Peculiarity: Node will do several initial run throughs with symbols, but Chrome DevTools does not
+//     if (typeof index === 'symbol') {
+//       return index;
+//     }
+
+//     const i = parseInt(index);
+
+//     if (i !== i) { // i is NaN
+//       return index;
+//     }
+
+//     return i;
+//   }
+
+// }
 
 
 
@@ -377,3 +403,6 @@ console.log('\n\nFinished!');
 
 // console.log('\narr.indexOf(5): ' + arr.indexOf(5) + '\n');
 
+
+
+module.exports = { LimitedArray };
