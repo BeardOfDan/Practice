@@ -23,31 +23,6 @@ class LimitedArray {
       throw new Error(`An array of size 0 is pointless!`);
     }
   }
-}
-
-
-const arr = new LimitedArray();
-
-console.log('arr: ')
-console.log(arr);
-console.log('\n\n');
-
-console.log('arr[0]: ' + arr[0]);
-console.log('setting arr: ' + (arr[0] = 0));
-console.log('arr[0]: ' + arr[0]);
-
-arr[1] = 2;
-arr[2] = 3;
-arr[3] = 5;
-arr[4] = 7;
-arr[5] = 11;
-
-console.log('arr.indexOf(5): ' + arr.indexOf(5));
-
-console.log('arr.length: ' + arr.length);
-
-
-console.log('\n\nFinished!');
-
+} // end of class LimitedArray
 
 module.exports = { LimitedArray };
